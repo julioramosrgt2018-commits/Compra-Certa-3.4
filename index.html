@@ -230,7 +230,7 @@ async function preprocessReceiptImage(file){
     const url=URL.createObjectURL(file);
     img.onload=()=>{
       try{
-        const maxW=1800;
+        const maxW=1200;
         const scale=Math.min(1,maxW/img.naturalWidth);
         const w=Math.max(1,Math.round(img.naturalWidth*scale));
         const h=Math.max(1,Math.round(img.naturalHeight*scale));
@@ -255,7 +255,7 @@ async function preprocessReceiptImage(file){
 function filterReceiptLine(line){
   return String(line||'')
     .normalize('NFC')
-    .replace(/[=<>~@\\|\[\]{}_*^`#$%&]/g,' ')
+    .replace(/[=<>~@\\|_§\[\]{}*^`#$%&]/g,' ')
     .replace(/[^A-Za-zÀ-ÖØ-öø-ÿ0-9 ,\.]/g,' ')
     .replace(/\s+/g,' ')
     .trim();
@@ -270,69 +270,78 @@ function moneyFromBR(raw){
   else if((v.match(/\./g)||[]).length>1) v=v.replace(/\./g,'');
   return parseFloat(v);
 }
+function receiptBlacklist(line){
+  const u=String(line||'').toUpperCase();
+  const words=['TOTAL','VALOR TOTAL','TROCO','DEBITO','DÉBITO','CREDITO','CRÉDITO','SUBTOTAL','SAT','NFC','LEI FEDERAL'];
+  return words.some(w=>u.includes(w)) || /HTTPS?:|WWW\./i.test(line);
+}
 function looksLikeReceiptName(s){
-  s=String(s||'').replace(/^\d{1,4}\s+/,'').trim();
-  if(!s || s.length<3)return false;
+  s=String(s||'').replace(/^\d{1,6}\s+/,'').trim();
+  if(!s || s.length<3 || s.length>80)return false;
   const letters=(s.match(/[A-Za-zÀ-ÖØ-öø-ÿ]/g)||[]).length;
   const digits=(s.match(/\d/g)||[]).length;
-  const words=s.split(/\s+/).filter(Boolean);
-  if(letters<2 || letters<Math.max(2,Math.ceil((letters+digits)*0.25)))return false;
-  if(/^(?:\d+\s*)+$/.test(s))return false;
-  if(words.length===1 && digits>letters)return false;
+  if(letters<2)return false;
+  if(/^\s*(UN|UND|UNID|UNIDADE|X)\s*$/i.test(s))return false;
+  if(/^[\d\s.,-]+$/.test(s))return false;
+  if(digits>letters*4 && letters<4)return false;
   return true;
 }
-function parseReceipt(text) {
-  const blacklist = [
-    'TOTAL', 'VALOR TOTAL', 'CARTAO', 'CARTÃO', 'DEBITO', 'DÉBITO',
-    'CREDITO', 'CRÉDITO', 'SUBTOTAL', 'TROCO', 'LEI FEDERAL',
-    'IMPOSTO', 'CONSUMIDOR', 'NFC-E', 'NFCe', 'SAT', 'OPERADOR',
-    'PROTOCOLO', 'CHAVE DE ACESSO', 'CNPJ', 'CPF', 'QR CODE',
-    'WWW.', 'HTTPS://', 'HTTP://'
-  ];
-  const ignoredLine = line => {
-    const upper = line.toUpperCase();
-    return blacklist.some(word => upper.includes(word)) || /https?:\/\/|www\./i.test(line);
-  };
-  const normalizeLine = line => line.normalize('NFC')
-    .replace(/[=<>~@\\|{}\[\]^*_#%$€£¥]/g, ' ')
-    .replace(/[“”„‟«»]/g, ' ').replace(/\s+/g, ' ').trim();
-  const removeItemNumber = name => name
-    .replace(/^\s*(?:ITEM\s*)?\d{1,4}\s*[-.)#:\/]?\s+/i, '').trim();
-  const isBadProductName = name => {
-    if (!name) return true;
-    const clean = removeItemNumber(name), upper = clean.toUpperCase();
-    if (clean.length < 3 || clean.length > 70) return true;
-    if (/^(UN|UND|UNID|UNIDADE|X|QTD|QTDE|PRODUTO|ITEM)$/i.test(clean)) return true;
-    if (/^[\d\s.,-]+$/.test(clean)) return true;
-    if (blacklist.some(word => upper.includes(word))) return true;
-    return false;
-  };
-  const lines = String(text || '').split(/\r?\n/).map(normalizeLine)
-    .filter(line => line && !ignoredLine(line));
-  const items = [];
-  for (const originalLine of lines) {
-    const moneyMatches = [...originalLine.matchAll(/R?\$?\s*(\d{1,6}(?:[.,]\d{2}))/gi)];
-    if (!moneyMatches.length) continue;
-    const qtyMatch = originalLine.match(/(?:^|\s)(\d+(?:[.,]\d+)?)\s*(?:X|UN|UND|UNID|UNIDADE)\b/i);
-    const quantity = qtyMatch ? qtyMatch[1].replace(',', '.') : '1';
-    const total = moneyMatches[moneyMatches.length - 1][1].replace(',', '.');
-    const unit = moneyMatches.length >= 2 ? moneyMatches[moneyMatches.length - 2][1].replace(',', '.') : total;
-    let name = originalLine.replace(/R?\$?\s*\d{1,6}(?:[.,]\d{2})/gi, ' ')
-      .replace(/\b\d+(?:[.,]\d+)?\s*(?:X|UN|UND|UNID|UNIDADE)\b/gi, ' ')
-      .replace(/\s+/g, ' ').trim();
-    name = removeItemNumber(name).replace(/^[\s\-:.)]+|[\s\-:.)]+$/g, '').replace(/\s+/g, ' ').trim();
-    if (isBadProductName(name) || name.split(/\s+/).length > 12) continue;
-    const qtyNum = Number(quantity), unitNum = Number(unit), totalNum = Number(total);
-    items.push({ name, quantity: Number.isFinite(qtyNum) && qtyNum > 0 ? qtyNum : 1,
-      unitPrice: Number.isFinite(unitNum) ? unitNum : totalNum,
-      total: Number.isFinite(totalNum) ? totalNum : unitNum });
+function parseReceipt(text){
+  const lines=filterReceiptOCR(text), out=[];
+  for(let raw of lines){
+    const line=raw.replace(/\s+/g,' ').trim();
+    if(receiptBlacklist(line)) continue;
+
+    // Só consideramos linhas que terminam com um preço monetário válido.
+    // Aceita 14,90, 9.90 e também R$ 14,90.
+    const endMatch=line.match(/(?:R\$\s*)?(\d{1,6}(?:[.,]\d{2}))\s*$/i);
+    if(!endMatch) continue;
+
+    const total=moneyFromBR(endMatch[1]);
+    if(!Number.isFinite(total) || total<=0 || total>=100000) continue;
+
+    let before=line.slice(0,endMatch.index).trim();
+    let qty=1, unit=total;
+
+    // Padrões: DESCRIÇÃO 1 UN X 14,90 / DESCRIÇÃO 1 X 14,90.
+    const qx=before.match(/(?:^|\s)(\d+(?:[.,]\d+)?)\s*(?:X|UN|UND|UNID|UNIDADE)\s*(?:R\$\s*)?(\d{1,6}(?:[.,]\d{2}))\s*$/i);
+    if(qx){
+      qty=parseFloat(qx[1].replace(',','.'))||1;
+      unit=moneyFromBR(qx[2]);
+      before=before.slice(0,qx.index).trim();
+    }else{
+      const q2=before.match(/(?:^|\s)(\d+(?:[.,]\d+)?)\s*(?:X|UN|UND|UNID|UNIDADE)\s*$/i);
+      if(q2){
+        qty=parseFloat(q2[1].replace(',','.'))||1;
+        before=before.slice(0,q2.index).trim();
+      }
+    }
+
+    // Remove numeração do item: 001, 002, 15 etc.
+    let desc=before.replace(/^\s*(?:ITEM\s*)?\d{1,6}\s*[-.)#:\/]*\s*/i,'').trim();
+    desc=desc.replace(/^[\s\-:.)]+|[\s\-:.)]+$/g,'').replace(/\s+/g,' ').trim();
+
+    // Se houver apenas rótulo/unidade ou texto claramente ilegível,
+    // o item continua na lista para correção manual.
+    if(!looksLikeReceiptName(desc)) desc='Item do Cupom';
+
+    out.push({
+      desc,
+      value:total,
+      qty:qty>0?qty:1,
+      unit:Number.isFinite(unit)?unit:total,
+      raw:line,
+      editable:true
+    });
   }
-  const unique = [], seen = new Set();
-  for (const item of items) {
-    const key = `${item.name.toUpperCase()}|${item.quantity}|${item.total.toFixed(2)}`;
-    if (!seen.has(key)) { seen.add(key); unique.push(item); }
+
+  // Evita duplicações idênticas produzidas pelo OCR.
+  const seen=new Set(), unique=[];
+  for(const item of out){
+    const key=`${item.desc.toUpperCase()}|${item.qty}|${item.value.toFixed(2)}`;
+    if(!seen.has(key)){seen.add(key);unique.push(item);}
   }
-  return unique;
+  return unique.slice(0,100);
 }
 async function readReceipt(){
   const f=receiptFile.files[0];if(!f)return;
