@@ -52,7 +52,28 @@ footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
 <div class="card"><h2>🧾 Ler cupom fiscal</h2>
 <p class="muted">Fotografe o cupom inteiro ou selecione uma imagem. O OCR tenta identificar descrição, quantidade e valores. Revise os dados antes de usar a conferência.</p>
 <button onclick="pick('receipt')">📷 Fotografar / escolher cupom</button>
-<input id="receiptFile" type="file" accept="image/*" capture="environment" class="hidden" onchange="readReceipt()">
+<input id="receiptFile" type="file" accept="image/*" capture="environment" class="hidden" onchange="prepareReceiptCrop()">
+<div id="receiptCrop" class="hidden" style="margin-top:10px">
+  <div class="muted">Arraste o dedo sobre a imagem para selecionar somente a região dos produtos e preços.</div>
+  <div style="position:relative;max-width:100%;overflow:hidden;border-radius:10px;background:#111;margin-top:8px">
+    <canvas id="cropCanvas" style="display:block;width:100%;height:auto;touch-action:none"></canvas>
+    <div id="cropBox" style="position:absolute;border:2px solid #087443;background:rgba(8,116,67,.12);display:none;pointer-events:none"></div>
+  </div>
+  <div class="row" style="margin-top:8px"><button onclick="useReceiptCrop()">✂️ Usar área selecionada</button><button class="sec" onclick="readReceipt(true)">Ler cupom inteiro</button></div>
+</div>
+<div class="row" style="margin-top:8px"><button class="sec" onclick="openManualReceipt()">⌨️ Inserir itens do cupom em texto</button><button class="sec" onclick="openQuickReceipt()">➕ Inserir item rápido</button></div>
+<div id="manualReceipt" class="card hidden" style="margin-top:10px">
+  <h3>Inserir itens do cupom em texto</h3>
+  <p class="muted">Cole uma ou mais linhas. Exemplo: CAFE 500G 1 UN X 14,90</p>
+  <textarea id="manualReceiptText" rows="7" placeholder="Cole aqui o texto do cupom..."></textarea>
+  <button onclick="processManualReceipt()">Adicionar itens</button>
+</div>
+<div id="quickReceipt" class="card hidden" style="margin-top:10px">
+  <h3>Inserir item rapidamente</h3>
+  <div class="row"><div><label>Nome</label><input id="quickName" placeholder="Ex.: Café 500g"></div><div><label>Preço</label><input id="quickPrice" inputmode="decimal" placeholder="14,90"></div></div>
+  <div class="row" style="margin-top:8px"><div><label>Quantidade</label><input id="quickQty" inputmode="decimal" value="1"></div><div></div></div>
+  <button onclick="addQuickReceipt()">Adicionar item</button>
+</div>
 <div id="ocrStatus" class="muted" style="margin-top:9px"></div><progress id="prog" class="hidden" max="100" value="0"></progress>
 <div id="ocrText" class="result hidden"></div>
 </div>
@@ -70,8 +91,8 @@ footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
 </main>
 <footer><button onclick="savePurchase()">💾 Salvar compra</button><button class="sec" onclick="newPurchase()">🗑️ Nova compra</button></footer>
 
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js?v=20260922-cc4"></script>
+<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js?v=20260922-cc4"></script>
 <script>
 let cart=JSON.parse(localStorage.getItem('cc_cart')||'[]');
 let receipt=JSON.parse(localStorage.getItem('cc_receipt')||'[]');
@@ -148,7 +169,7 @@ async function identifyProductFromPhoto(file){
  const status=document.getElementById('productAI'); status.textContent='🔎 Analisando foto do produto…';
  try{
    let text='';
-   if(window.Tesseract){const r=await Tesseract.recognize(file,'por+eng'); text=r.data.text||'';}
+   if(window.Tesseract){const r=await Tesseract.recognize(file,'por',{config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}}); text=r.data.text||'';}
    const safeText=strictOCRText(text);
    const name=bestOCRName(text);
    const joined=safeText;
@@ -191,11 +212,11 @@ async function lookupBarcode(code){
  }
 }
 async function readShelfLabel(file){
- try{const r=await Tesseract.recognize(file,'por+eng'); const text=r.data.text||''; const prices=[...text.matchAll(/(?:R\$\s*)?(\d{1,4}[.,]\d{2})/g)].map(m=>m[1].replace(',','.')); if(prices.length&&!document.getElementById('price').value) document.getElementById('price').value=prices[prices.length-1];
+ try{const r=await Tesseract.recognize(file,'por',{config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}}); const text=r.data.text||''; const prices=[...text.matchAll(/(?:R\$\s*)?(\d{1,4}[.,]\d{2})/g)].map(m=>m[1].replace(',','.')); if(prices.length&&!document.getElementById('price').value) document.getElementById('price').value=prices[prices.length-1];
    const codes=text.match(/\b\d{8,14}\b/g)||[]; if(codes.length){const code=codes[0]; const current=document.getElementById('barcode').value; document.getElementById('productAI').textContent=current&&current!==code?'🚨 Código da etiqueta diferente do código do produto!':'🏷️ Etiqueta lida. Código e preço extraídos quando possível.'; document.getElementById('labelBarcode').value=code;} else document.getElementById('productAI').textContent='🏷️ Etiqueta analisada; revise preço e código.';
  }catch(e){document.getElementById('productAI').textContent='⚠️ Não foi possível ler a etiqueta automaticamente.'}
 }
-async function readExpiryPhoto(file){try{const r=await Tesseract.recognize(file,'por+eng');const t=r.data.text||'';const m=t.match(/\b(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})\b/);if(m){let y=m[3].length===2?'20'+m[3]:m[3];document.getElementById('expiry').value=y+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');document.getElementById('productAI').textContent='📅 Validade identificada pela foto. Confira antes de adicionar.'}}catch(e){}}
+async function readExpiryPhoto(file){try{const r=await Tesseract.recognize(file,'por',{config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}});const t=r.data.text||'';const m=t.match(/\b(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})\b/);if(m){let y=m[3].length===2?'20'+m[3]:m[3];document.getElementById('expiry').value=y+'-'+String(m[2]).padStart(2,'0')+'-'+String(m[1]).padStart(2,'0');document.getElementById('productAI').textContent='📅 Validade identificada pela foto. Confira antes de adicionar.'}}catch(e){}}
 async function scan(){
  document.getElementById('camera').classList.remove('hidden');
  try{
@@ -343,21 +364,89 @@ function parseReceipt(text){
   }
   return unique.slice(0,100);
 }
-async function readReceipt(){
-  const f=receiptFile.files[0];if(!f)return;
-  ocrStatus.textContent='Preparando imagem do cupom…';prog.classList.remove('hidden');ocrText.classList.remove('hidden');prog.value=0;
+let receiptCropState={img:null,scale:1,displayW:0,displayH:0,x:0,y:0,w:0,h:0,startX:0,startY:0,dragging:false,blob:null};
+
+function showCropBox(){
+  const box=document.getElementById('cropBox');
+  if(!box || !receiptCropState.w || !receiptCropState.h)return;
+  box.style.display='block';
+  box.style.left=(receiptCropState.x/receiptCropState.displayW*100)+'%';
+  box.style.top=(receiptCropState.y/receiptCropState.displayH*100)+'%';
+  box.style.width=(receiptCropState.w/receiptCropState.displayW*100)+'%';
+  box.style.height=(receiptCropState.h/receiptCropState.displayH*100)+'%';
+}
+function prepareReceiptCrop(){
+  const f=document.getElementById('receiptFile').files[0]; if(!f)return;
+  const url=URL.createObjectURL(f), img=new Image();
+  img.onload=()=>{
+    URL.revokeObjectURL(url);
+    const canvas=document.getElementById('cropCanvas');
+    const maxW=1200, scale=Math.min(1,maxW/img.naturalWidth);
+    const w=Math.round(img.naturalWidth*scale), h=Math.round(img.naturalHeight*scale);
+    canvas.width=w; canvas.height=h;
+    canvas.style.width='100%'; canvas.style.height='auto';
+    canvas.getContext('2d').drawImage(img,0,0,w,h);
+    receiptCropState={img,scale,displayW:w,displayH:h,x:0,y:0,w:0,h:0,startX:0,startY:0,dragging:false,blob:null};
+    document.getElementById('receiptCrop').classList.remove('hidden');
+    const rect=canvas.getBoundingClientRect();
+    const point=(e)=>{const p=e.touches?e.touches[0]:e;return {x:Math.max(0,Math.min(w,(p.clientX-rect.left)*w/rect.width)),y:Math.max(0,Math.min(h,(p.clientY-rect.top)*h/rect.height))};};
+    const begin=e=>{e.preventDefault();const p=point(e);receiptCropState.startX=p.x;receiptCropState.startY=p.y;receiptCropState.x=p.x;receiptCropState.y=p.y;receiptCropState.w=0;receiptCropState.h=0;receiptCropState.dragging=true;showCropBox();};
+    const move=e=>{if(!receiptCropState.dragging)return;e.preventDefault();const p=point(e);const x=Math.min(receiptCropState.startX,p.x),y=Math.min(receiptCropState.startY,p.y);receiptCropState.x=x;receiptCropState.y=y;receiptCropState.w=Math.abs(p.x-receiptCropState.startX);receiptCropState.h=Math.abs(p.y-receiptCropState.startY);showCropBox();};
+    const end=e=>{if(receiptCropState.dragging){receiptCropState.dragging=false;showCropBox();}};
+    canvas.onpointerdown=begin; canvas.onpointermove=move; canvas.onpointerup=end; canvas.onpointercancel=end; canvas.onpointerleave=end;
+  };
+  img.onerror=()=>{document.getElementById('ocrStatus').textContent='⚠️ Não foi possível abrir a imagem do cupom.'};
+  img.src=url;
+}
+function cropCanvasBlob(){
+  return new Promise((resolve,reject)=>{
+    const s=receiptCropState;
+    if(!s.img || s.w<20 || s.h<20)return reject(new Error('Selecione uma área maior contendo produtos e preços.'));
+    const out=document.createElement('canvas'); out.width=Math.round(s.w); out.height=Math.round(s.h);
+    const ctx=out.getContext('2d'); ctx.drawImage(s.img,s.x/s.scale,s.y/s.scale,s.w/s.scale,s.h/s.scale,0,0,out.width,out.height);
+    out.toBlob(b=>b?resolve(b):reject(new Error('Falha ao recortar a imagem.')),'image/jpeg',0.92);
+  });
+}
+async function useReceiptCrop(){
+  try{ receiptCropState.blob=await cropCanvasBlob(); document.getElementById('receiptCrop').classList.add('hidden'); await readReceipt(false,receiptCropState.blob); }
+  catch(e){ document.getElementById('ocrStatus').textContent='⚠️ '+e.message; }
+}
+async function recognizeReceipt(blob){
+  const processed=await preprocessReceiptImage(blob);
+  const {data}=await Tesseract.recognize(processed,'por',{logger:m=>{if(m.progress)document.getElementById('prog').value=Math.round(m.progress*100);if(m.status)document.getElementById('ocrStatus').textContent=m.status+'…'},config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}});
+  return data.text||'';
+}
+async function readReceipt(full=true,overrideBlob=null){
+  const f=document.getElementById('receiptFile').files[0];
+  const blob=overrideBlob||f; if(!blob)return;
+  document.getElementById('ocrStatus').textContent='Preparando imagem do cupom…';
+  document.getElementById('prog').classList.remove('hidden'); document.getElementById('ocrText').classList.remove('hidden'); document.getElementById('prog').value=0;
   try{
-    const processed=await preprocessReceiptImage(f);
-    ocrStatus.textContent='Aplicando OCR no cupom em escala de cinzas…';
-    const {data}=await Tesseract.recognize(processed,'por+eng',{logger:m=>{if(m.progress)prog.value=Math.round(m.progress*100);if(m.status)ocrStatus.textContent=m.status+'…'}});
-    const filteredLines=filterReceiptOCR(data.text||'');
-    const cleanText=filteredLines.join('\n');
-    ocrText.textContent=cleanText;
+    const raw=await recognizeReceipt(blob);
+    const filteredLines=filterReceiptOCR(raw), cleanText=filteredLines.join('\n');
+    document.getElementById('ocrText').textContent=cleanText;
     receipt=parseReceipt(cleanText);
     localStorage.setItem('cc_receipt',JSON.stringify(receipt));
-    ocrStatus.textContent=receipt.length?'✅ Cupom processado. Revise os itens abaixo e corrija os nomes quando necessário.':'⚠️ Texto detectado, mas nenhum item com preço foi identificado. Tente fotografar o cupom mais próximo, sem reflexos e com boa iluminação.';
+    document.getElementById('ocrStatus').textContent=receipt.length?'✅ OCR concluído. Revise os itens abaixo.':'⚠️ OCR não encontrou itens. Use o modo manual abaixo para não interromper a conferência.';
     renderReceipt();renderDiff();
-  }catch(e){ocrStatus.textContent='Não foi possível processar o cupom: '+e.message}
+  }catch(e){document.getElementById('ocrStatus').textContent='⚠️ OCR falhou. Use o modo manual: '+e.message;}
+}
+function openManualReceipt(){document.getElementById('manualReceipt').classList.toggle('hidden');document.getElementById('quickReceipt').classList.add('hidden');}
+function openQuickReceipt(){document.getElementById('quickReceipt').classList.toggle('hidden');document.getElementById('manualReceipt').classList.add('hidden');}
+function processManualReceipt(){
+  const t=document.getElementById('manualReceiptText').value.trim(); if(!t)return;
+  const parsed=parseReceipt(t);
+  if(!parsed.length){document.getElementById('ocrStatus').textContent='⚠️ Nenhum preço reconhecido. Tente: NOME 1 UN X 14,90';return;}
+  receipt=[...receipt,...parsed]; localStorage.setItem('cc_receipt',JSON.stringify(receipt)); renderReceipt();renderDiff();
+  document.getElementById('ocrStatus').textContent='✅ Itens inseridos manualmente.';
+}
+function addQuickReceipt(){
+  const desc=(document.getElementById('quickName').value||'Item do Cupom').trim();
+  const value=moneyFromBR(document.getElementById('quickPrice').value); const qty=parseFloat((document.getElementById('quickQty').value||'1').replace(',','.'))||1;
+  if(!Number.isFinite(value)||value<=0){document.getElementById('ocrStatus').textContent='⚠️ Informe um preço válido.';return;}
+  receipt.push({desc:desc||'Item do Cupom',value,qty,unit:value/qty,raw:'manual',editable:true}); localStorage.setItem('cc_receipt',JSON.stringify(receipt)); renderReceipt();renderDiff();
+  document.getElementById('quickName').value='';document.getElementById('quickPrice').value='';document.getElementById('quickQty').value='1';
+  document.getElementById('ocrStatus').textContent='✅ Item adicionado manualmente.';
 }
 function renderReceipt(){let box=document.getElementById('receiptItems');box.innerHTML=receipt.length?receipt.map((x,i)=>`<div class=item><input value="${esc(x.desc)}" aria-label="Nome do produto" onchange="receipt[${i}].desc=this.value.trim()||'PRODUTO RECONHECIDO';localStorage.setItem('cc_receipt',JSON.stringify(receipt));renderDiff()"><div class=meta>Qtd: ${x.qty} · Valor reconhecido: ${money(x.value)}${x.unit&&Math.abs(x.unit-x.value)>0.001?' · Unitário: '+money(x.unit):''}</div><button class=red onclick="receipt.splice(${i},1);localStorage.setItem('cc_receipt',JSON.stringify(receipt));renderReceipt();renderDiff()">Remover</button></div>`).join(''):'<div class=muted>Nenhum item reconhecido.</div>'}
 function normalize(s){return s.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\\s+/g,' ').trim()}
@@ -372,9 +461,13 @@ render();
 </script>
 <script>
 // Service Worker em arquivo separado e mesma origem: necessário para PWA/offline confiável no Vercel.
+const APP_VERSION='20260922-cc4';
+if ('caches' in window) {
+  caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('compra-certa-') && !k.includes(APP_VERSION)).map(k=>caches.delete(k)))).catch(()=>{});
+}
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js', {scope:'./'})
+    navigator.serviceWorker.register('./sw.js?v='+APP_VERSION, {scope:'./'})
       .catch(err => console.warn('Service Worker:', err));
   });
 }
