@@ -2,7 +2,7 @@
 <html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#087443"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Compra Certa - conferência de preços, validade e cupom fiscal">
-<title>Compra Certa 3.0</title>
+<title>Compra Certa — Lista, Gôndola e Cupom</title>
 <style>
 :root{--g:#087443;--g2:#e9f7f0;--red:#c62828;--yel:#996700;--bg:#f4f7f5;--card:#fff;--line:#dce5df;--muted:#64736b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#18211d}
@@ -26,9 +26,9 @@ footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQ29tcHJhIENlcnRhIiwic2hvcnRfbmFtZSI6IkNvbXByYSBDZXJ0YSIsImRlc2NyaXB0aW9uIjoiQ29uZmVyw6puY2lhIGRlIHByZcOnb3MsIHZhbGlkYWRlIGUgY3Vwb20gZmlzY2FsLiIsInN0YXJ0X3VybCI6Ii4vIiwic2NvcGUiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImJhY2tncm91bmRfY29sb3IiOiIjZjRmN2Y1IiwidGhlbWVfY29sb3IiOiIjMDg3NDQzIiwibGFuZyI6InB0LUJSIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owaWFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIWnBaWGRDYjNnOUlqQWdNQ0ExTVRJZ05URXlJajRLUEhKbFkzUWdkMmxrZEdnOUlqVXhNaUlnYUdWcFoyaDBQU0kxTVRJaUlISjRQU0l4TVRJaUlHWnBiR3c5SWlNd09EYzBORE1pTHo0S1BIQmhkR2dnWm1sc2JEMGlJMlptWmlJZ1pEMGlUVEV4TWlBeE16Sm9ORFZzTWpJZ01UazRZVE14SURNeElEQWdNQ0F3SURNeElESTRhREU0T0hZdE16UklNakUxWVMwM0lEY2dNQ0F3SURFdE55MDJiQzB6TFRJNGFERTRNR0V6TUNBek1DQXdJREFnTUNBeU9TMHlNbXd5TmkweE1ERklNVFkzYkMwMUxUTTFhQzAxTUhvaUx6NEtQSEJoZEdnZ1ptbHNiRDBpSXpBNE56UTBNeUlnWkQwaVRUSXpOU0F5TURGb016RjJOVFJvTFRNeGVtMDFOeUF3YURNeGRqVTBhQzB6TVhwdE5UY2dNR2d6TVhZMU5HZ3RNekY2SWk4K0NqeGphWEpqYkdVZ1kzZzlJakl5TWlJZ1kzazlJak01T0NJZ2NqMGlNamdpSUdacGJHdzlJaU5tWm1ZaUx6NEtQR05wY21Oc1pTQmplRDBpTXpjd0lpQmplVDBpTXprNElpQnlQU0l5T0NJZ1ptbHNiRDBpSTJabVppSXZQZ284Y0dGMGFDQm1hV3hzUFNJalptWm1JaUJrUFNKTk1UWXdJREUyTjJneU9EUnNMVGdnTXpKSU1UWTBlaUl2UGdvOEwzTjJaejQ9Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSFpwWlhkQ2IzZzlJakFnTUNBMU1USWdOVEV5SWo0S1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1USWlJR1pwYkd3OUlpTXdPRGMwTkRNaUx6NEtQSEJoZEdnZ1ptbHNiRDBpSTJabVppSWdaRDBpVFRFeE1pQXhNekpvTkRWc01qSWdNVGs0WVRNeElETXhJREFnTUNBd0lETXhJREk0YURFNE9IWXRNelJJTWpFMVlTMDNJRGNnTUNBd0lERXROeTAyYkMwekxUSTRhREU0TUdFek1DQXpNQ0F3SURBZ01DQXlPUzB5TW13eU5pMHhNREZJTVRZM2JDMDFMVE0xYUMwMU1Ib2lMejRLUEhCaGRHZ2dabWxzYkQwaUl6QTROelEwTXlJZ1pEMGlUVEl6TlNBeU1ERm9NekYyTlRSb0xUTXhlbTAxTnlBd2FETXhkalUwYUMwek1YcHROVGNnTUdnek1YWTFOR2d0TXpGNklpOCtDanhqYVhKamJHVWdZM2c5SWpJeU1pSWdZM2s5SWpNNU9DSWdjajBpTWpnaUlHWnBiR3c5SWlObVptWWlMejRLUEdOcGNtTnNaU0JqZUQwaU16Y3dJaUJqZVQwaU16azRJaUJ5UFNJeU9DSWdabWxzYkQwaUkyWm1aaUl2UGdvOGNHRjBhQ0JtYVd4c1BTSWpabVptSWlCa1BTSk5NVFl3SURFMk4yZ3lPRFJzTFRnZ016SklNVFkwZWlJdlBnbzhMM04yWno0PSIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=">
 
 </head><body>
-<header><h1>🛒 Compra Certa 3.0</h1><small>Registre a gôndola e confira o que foi cobrado.</small></header>
+<header><h1>🛒 Compra Certa</h1><small>Registre a gôndola e confira o que foi cobrado.</small></header>
 <main>
-<nav><button onclick="show('cart')">🛒 Compra</button><button onclick="show('receipt')">🧾 Cupom</button><button onclick="show('diff')">🚨 Divergências</button><button onclick="show('history')">📚 Histórico</button></nav>
+<nav><button onclick="show('cart')">🛒 Compra</button><button onclick="show('list')">📝 Lista de compras</button><button onclick="show('receipt')">🧾 Cupom</button><button onclick="show('diff')">🚨 Divergências</button><button onclick="show('history')">📚 Histórico</button></nav>
 
 <section id="cart">
 <div class="card total"><div><small>TOTAL PREVISTO</small><strong id="total">R$ 0,00</strong></div><div style="text-align:right"><small>Itens</small><b id="count">0</b></div></div>
@@ -46,6 +46,22 @@ footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
 <input id="expiryPhoto" type="file" accept="image/*" capture="environment" class="hidden" onchange="photo('expiry')">
 </div>
 <div class="card"><h3>Itens</h3><div id="items"></div></div>
+</section>
+
+<section id="list" class="hidden">
+<div class="card"><h2>📝 Lista de Compras</h2>
+<p class="muted">Planeje antes de sair. Marque os produtos conforme colocar cada item no carrinho. A lista fica salva neste aparelho.</p>
+<div class="row">
+  <div><label>Produto</label><input id="listName" placeholder="Ex.: Arroz 5 kg"></div>
+  <div><label>Quantidade</label><input id="listQty" type="number" min="1" value="1"></div>
+</div>
+<div class="row" style="margin-top:8px">
+  <div><label>Observação (opcional)</label><input id="listNote" placeholder="Ex.: marca X"></div>
+  <div style="display:flex;align-items:end"><button style="width:100%" onclick="addListItem()">➕ Incluir item</button></div>
+</div>
+</div>
+<div class="card"><div class="itemtop"><h3 style="margin:0">Itens planejados</h3><button class="sec" onclick="clearCheckedList()">Limpar marcados</button></div>
+<div id="shoppingList"></div></div>
 </section>
 
 <section id="receipt" class="hidden">
@@ -97,11 +113,19 @@ footer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px sol
 let cart=JSON.parse(localStorage.getItem('cc_cart')||'[]');
 let receipt=JSON.parse(localStorage.getItem('cc_receipt')||'[]');
 let histories=JSON.parse(localStorage.getItem('cc_histories')||'[]');
+let shoppingList=JSON.parse(localStorage.getItem('cc_shopping_list')||'[]');
 let photoFlags={product:false,label:false,expiry:false};let stream=null,detector=null;
 
 const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v)||0);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function show(id){['cart','receipt','diff','history'].forEach(x=>document.getElementById(x).classList.toggle('hidden',x!==id));if(id==='history')renderHist();if(id==='diff')renderDiff()}
+function show(id){
+  ['cart','list','receipt','diff','history'].forEach(x=>{
+    const el=document.getElementById(x); if(el) el.classList.toggle('hidden',x!==id);
+  });
+  if(id==='history')renderHist();
+  if(id==='diff')renderDiff();
+  if(id==='list')renderShoppingList();
+}
 function save(){localStorage.setItem('cc_cart',JSON.stringify(cart));localStorage.setItem('cc_receipt',JSON.stringify(receipt));render()}
 function render(){
 let t=cart.reduce((s,x)=>s+x.price*x.qty,0);document.getElementById('total').textContent=money(t);document.getElementById('count').textContent=cart.reduce((s,x)=>s+x.qty,0);document.getElementById('expected').value=money(t);
@@ -165,51 +189,73 @@ function bestOCRName(text){
   });
   return candidates[0];
 }
-async function identifyProductFromPhoto(file){
- const status=document.getElementById('productAI'); status.textContent='🔎 Analisando foto do produto…';
- try{
-   let text='';
-   if(window.Tesseract){const r=await Tesseract.recognize(file,'por',{config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}}); text=r.data.text||'';}
-   const safeText=strictOCRText(text);
-   const name=bestOCRName(text);
-   const joined=safeText;
-   const spec=[];
-   const measures=joined.match(/\b\d+(?:[,.]\d+)?\s?(?:kg|g|mg|l|ml|cl)\b/ig); if(measures) spec.push(...measures.slice(0,3));
-   const flavors=joined.match(/\b(?:chocolate|morango|baunilha|limão|limao|queijo|presunto|frango|carne|original|tradicional|integral|zero|light|diet|natural|coco|uva|laranja|maçã|maca|menta|pimenta|bacon)\b/ig); if(flavors) spec.push(...[...new Set(flavors)].slice(0,3));
-   const eans=joined.match(/\b\d{13}\b/g)||[]; const ean=eans[0];
-   // Nunca preenche o nome com OCR confuso. Se houver EAN, a consulta à OFF terá prioridade.
-   if(name && !document.getElementById('name').value) document.getElementById('name').value=name;
-   if(spec.length && !document.getElementById('spec').value) document.getElementById('spec').value=[...new Set(spec)].join(' · ');
-   if(ean && !document.getElementById('barcode').value) { document.getElementById('barcode').value=ean; await lookupBarcode(ean); }
-   if(!name && !ean) document.getElementById('name').value='';
-   status.textContent=name||ean?'✅ Foto analisada. Revise os dados antes de adicionar.':'⚠️ Não foi possível identificar um nome confiável na foto. O campo Nome foi deixado em branco.';
- }catch(e){
-   document.getElementById('name').value='';
-   status.textContent='⚠️ OCR ilegível. O campo Nome foi deixado em branco.';
- }
+function preprocessProductImage(file){
+  return new Promise((resolve,reject)=>{
+    const url=URL.createObjectURL(file), img=new Image();
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const maxW=1200, scale=Math.min(1,maxW/(img.naturalWidth||1200));
+      const w=Math.max(1,Math.round((img.naturalWidth||1200)*scale));
+      const h=Math.max(1,Math.round((img.naturalHeight||1600)*scale));
+      const c=document.createElement('canvas'); c.width=w;c.height=h;
+      const ctx=c.getContext('2d',{willReadFrequently:true});
+      ctx.drawImage(img,0,0,w,h);
+      const d=ctx.getImageData(0,0,w,h), px=d.data;
+      for(let i=0;i<px.length;i+=4){
+        const gray=Math.round(.299*px[i]+.587*px[i+1]+.114*px[i+2]);
+        const v=gray>170?255:gray<85?0:gray;
+        px[i]=px[i+1]=px[i+2]=v;
+      }
+      ctx.putImageData(d,0,0);
+      c.toBlob(b=>b?resolve(b):reject(new Error('Falha no processamento da imagem')),'image/jpeg',.92);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Imagem inválida'));};
+    img.src=url;
+  });
 }
-async function lookupBarcode(code){
- const ean=String(code||'').replace(/\D/g,'');
- if(!/^\d{13}$/.test(ean)) return false;
- try{
-   const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+encodeURIComponent(ean)+'.json?fields=product_name_pt,product_name,brands,generic_name_pt,generic_name,quantity,flavor,flavor_pt,categories_tags');
-   if(!r.ok) return false;
-   const j=await r.json();
-   if(j.status!==1) return false;
-   const p=j.product||{};
-   const n=p.product_name_pt||p.product_name||'';
-   const brand=p.brands||'';
-   const attrs=[p.generic_name_pt||p.generic_name,p.quantity,p.flavor_pt||p.flavor].filter(Boolean).join(' · ');
-   if(n){
-     const fullName=(brand&&n.toLowerCase().indexOf(brand.toLowerCase())<0?brand+' ':'')+n;
-     document.getElementById('name').value=strictOCRText(fullName);
-   }
-   if(attrs) document.getElementById('spec').value=strictOCRText(attrs);
-   document.getElementById('productAI').textContent='✅ Produto localizado pelo código de barras na Open Food Facts. Dados preenchidos automaticamente.';
-   return true;
- }catch(e){
-   return false;
- }
+function extractShelfPrice(text){
+  const t=String(text||'').replace(/[=~|_§]/g,' ');
+  const matches=[...t.matchAll(/(?:R\$\s*)?(\d{1,4}[.,]\d{2})(?!\d)/g)]
+    .map(m=>moneyFromBR(m[1])).filter(v=>Number.isFinite(v)&&v>0&&v<100000);
+  return matches.length?matches[matches.length-1]:null;
+}
+async function identifyProductFromPhoto(file){
+  const status=document.getElementById('productAI');
+  status.textContent='🔎 Melhorando a foto e lendo nome/preço…';
+  try{
+    const processed=await preprocessProductImage(file);
+    let text='';
+    if(window.Tesseract){
+      const r=await Tesseract.recognize(processed,'por',{
+        logger:m=>{if(m.status==='recognizing text') status.textContent='🔎 OCR: '+Math.round((m.progress||0)*100)+'%';},
+        config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}
+      });
+      text=r.data.text||'';
+    }
+    const safeText=String(text).normalize('NFC')
+      .replace(/[=~|_§]/g,' ')
+      .replace(/[^\p{L}\p{N}\s.,:$€R-]/gu,' ')
+      .replace(/\s+/g,' ').trim();
+    const name=bestOCRName(text);
+    const price=extractShelfPrice(text);
+    const measures=safeText.match(/\b\d+(?:[,.]\d+)?\s?(?:kg|g|mg|l|ml|cl)\b/ig)||[];
+    const flavors=safeText.match(/\b(?:chocolate|morango|baunilha|limão|limao|queijo|presunto|frango|carne|original|tradicional|integral|zero|light|diet|natural|coco|uva|laranja|maçã|maca|menta|pimenta|bacon)\b/ig)||[];
+    if(name && !document.getElementById('name').value) document.getElementById('name').value=name;
+    if(price!==null) document.getElementById('price').value=price.toFixed(2);
+    if((measures.length||flavors.length) && !document.getElementById('spec').value)
+      document.getElementById('spec').value=[...new Set([...measures.slice(0,3),...flavors.slice(0,3)])].join(' · ');
+    const eans=safeText.match(/\b\d{13}\b/g)||[];
+    if(eans[0] && !document.getElementById('barcode').value){
+      document.getElementById('barcode').value=eans[0]; await lookupBarcode(eans[0]);
+    }
+    if(!name && !eans[0]) document.getElementById('name').value='';
+    status.textContent=(name||price!==null||eans[0])
+      ? '✅ Foto processada. Revise Nome e Preço antes de adicionar.'
+      : '⚠️ Não foi possível identificar nome com segurança. Nome deixado em branco.';
+  }catch(e){
+    document.getElementById('name').value='';
+    status.textContent='⚠️ Não foi possível processar a foto: '+e.message;
+  }
 }
 async function readShelfLabel(file){
  try{const r=await Tesseract.recognize(file,'por',{config:{tessedit_pageseg_mode:'6',preserve_interword_spaces:'1'}}); const text=r.data.text||''; const prices=[...text.matchAll(/(?:R\$\s*)?(\d{1,4}[.,]\d{2})/g)].map(m=>m[1].replace(',','.')); if(prices.length&&!document.getElementById('price').value) document.getElementById('price').value=prices[prices.length-1];
@@ -307,115 +353,88 @@ function looksLikeReceiptName(s){
   if(digits>letters*4 && letters<4)return false;
   return true;
 }
-function parseReceipt(text) {
-  const START_MARKERS = [
-    /\bITEM\b/i, /\bC[ÓO]DIGO\b/i, /\bDESCRI[CÇ][AÃ]O\b/i,
-    /\bQTD\b/i, /^\s*0*1\s*[-.)]?\s+/i, /^\s*001\b/i
-  ];
-
-  const END_MARKERS = [
-    /\bVALOR\s+TOTAL\b/i, /\bQTD\.?\s*TOTAL\s+DE\s+ITENS\b/i,
-    /\bFORMA\s+DE\s+PAGAMENTO\b/i, /\bCART[ÃA]O\b/i,
-    /\bTROCO\b/i, /\bSUBTOTAL\b/i, /\bCHAVE\s+DE\s+ACESSO\b/i,
-    /^\s*TOTAL\b/i
-  ];
-
-  const FISCAL_BAD = [
-    /\bCNPJ\b/i, /\bCPF\b/i, /\bRAZ[AÃ]O\s+SOCIAL\b/i,
-    /\bENDERE[CÇ]O\b/i, /\bTELEFONE\b/i, /\bTEL\.?\b/i,
-    /\bNFC[\s-]?E\b/i, /\bSAT\b/i, /\bI\.?E\.?\b/i, /\bIM\b/i,
-    /\bINSCRI[CÇ][AÃ]O\b/i, /\bPROTOCOLO\b/i,
-    /\bCHAVE\s+DE\s+ACESSO\b/i, /https?:\/\//i, /\bwww\./i
-  ];
-
-  const normalize = (line) => String(line || '')
+function parseReceipt(text){
+  const normalizeLine=line=>String(line||'')
     .normalize('NFC')
-    .replace(/[=~|\\@_§<>]/g, ' ')
-    .replace(/[“”„‟«»]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+    .replace(/[=~|\\@_§<>]/g,' ')
+    .replace(/[“”„‟«»]/g,' ')
+    .replace(/\s+/g,' ').trim();
 
-  const lines = String(text || '')
-    .split(/\r?\n/)
-    .map(normalize)
-    .filter(Boolean);
+  const lines=String(text||'').split(/\r?\n/).map(normalizeLine).filter(Boolean);
 
-  const isEnd = (line) => END_MARKERS.some(re => re.test(line));
-  const isFiscal = (line) => FISCAL_BAD.some(re => re.test(line));
+  // Slicing: nada antes do cabeçalho de itens entra na análise.
+  const startHeader=/\b(?:ITEM|C[ÓO]DIGO|DESCRI[CÇ][AÃ]O|QTD)\b/i;
+  const firstItem=/^\s*0*1\s*[-.)#:\/]?\s+/i;
+  let startIndex=lines.findIndex(l=>startHeader.test(l));
+  let includeStart=false;
+  if(startIndex<0){
+    startIndex=lines.findIndex(l=>firstItem.test(l));
+    includeStart=true;
+  }
+  if(startIndex<0) return [];
 
-  let start = lines.findIndex(line =>
-    START_MARKERS.some(re => re.test(line))
-  );
+  // Ao primeiro marcador de encerramento, o restante é ignorado.
+  const END=/\b(?:TOTAL|SUBTOTAL|VALOR\s+TOTAL|QTD\.?\s*TOTAL\s+DE\s+ITENS|FORMA\s+DE\s+PAGAMENTO|CART[ÃA]O|DINHEIRO|PIX|TROCO)\b/i;
+  const FISCAL=/\b(?:CNPJ|CPF|RAZ[AÃ]O\s+SOCIAL|ENDERE[CÇ]O|TELEFONE|TEL\.?|CEP|NFC[\s-]?E|SAT|PROTOCOLO|CHAVE\s+DE\s+ACESSO|IMPOSTO|IMPOSTOS|LEI\s+FEDERAL|TRIBUT|ICMS|ISS|PIS|COFINS|OPERADOR|IE|IM)\b/i;
+  const QR=/\b(?:QRCODE|QR\s*CODE|QR)\b/i;
+  const PHONE=/(?:\(?\d{2}\)?\s*)?(?:9\d{4}|\d{4})[-.\s]?\d{4}\b/;
+  const CNPJ=/\b\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}\b/;
+  const URL=/(?:https?:\/\/|www\.)\S+/i;
+  const MONEY=/(?:R\$\s*)?(\d{1,7}(?:[.,]\d{2}))(?!\d)/g;
+  const QTY=/\b(\d+(?:[.,]\d+)?)\s*(UN|UND|UNID|UNIDADE|KG|KILO|X)\b/i;
 
-  if (start < 0) {
-    start = lines.findIndex(line =>
-      /^\s*0*\d{1,4}\s+\S+/i.test(line)
-    );
+  const useful=[];
+  for(let i=startIndex+(includeStart?0:1);i<lines.length;i++){
+    const l=lines[i];
+    if(END.test(l)) break;
+    useful.push(l);
   }
 
-  if (start < 0) return [];
+  const out=[];
+  for(const raw of useful){
+    if(FISCAL.test(raw)||QR.test(raw)||PHONE.test(raw)||CNPJ.test(raw)||URL.test(raw)) continue;
 
-  const useful = [];
-  for (let i = start + 1; i < lines.length; i++) {
-    const line = lines[i];
-    if (isEnd(line)) break;
-    useful.push(line);
-  }
+    // Regra absoluta: descrição + quantidade/unidade + valor monetário.
+    const qtyMatch=raw.match(QTY);
+    const moneyMatches=[...raw.matchAll(MONEY)];
+    if(!qtyMatch||!moneyMatches.length) continue;
 
-  const moneyRe = /(?:R\$\s*)?(\d{1,7}(?:[.,]\d{2}))/g;
-  const qtyRe = /\b(\d+(?:[.,]\d+)?)\s*(UN|UND|UNID|UNIDADE|KG|KILO|X)\b/i;
+    const total=moneyFromBR(moneyMatches[moneyMatches.length-1][1]);
+    if(!Number.isFinite(total)||total<=0) continue;
 
-  const items = [];
+    let before=raw;
+    for(const m of moneyMatches) before=before.replace(m[0],' ');
+    before=before.replace(QTY,' ');
+    before=before.replace(/^\s*(?:ITEM\s*)?\d{1,6}\s*[-.)#:\/]?\s*/i,' ')
+      .replace(/\s+/g,' ').trim();
 
-  for (const raw of useful) {
-    if (isFiscal(raw)) continue;
+    const cleanName=strictOCRText(before)
+      .replace(/\b(?:UN|UND|UNID|UNIDADE|KG|KILO|X)\b/ig,' ')
+      .replace(/\s+/g,' ').trim();
 
-    const money = [...raw.matchAll(moneyRe)];
-    const qty = raw.match(qtyRe);
+    const validName=looksLikeReceiptName(cleanName) &&
+      /[A-Za-zÁÉÍÓÚÂÊÔÃÕÀÇáéíóúâêôãõàç]/.test(cleanName);
 
-    if (!money.length || !qty) continue;
-
-    const quantity = Number(qty[1].replace(',', '.'));
-    const total = Number(money[money.length - 1][1].replace(',', '.'));
-    const unit = money.length > 1
-      ? Number(money[money.length - 2][1].replace(',', '.'))
+    const qty=parseFloat(qtyMatch[1].replace(',','.'))||1;
+    const unit=moneyMatches.length>1
+      ? moneyFromBR(moneyMatches[moneyMatches.length-2][1])
       : total;
 
-    if (!Number.isFinite(quantity) || quantity <= 0) continue;
-    if (!Number.isFinite(total) || total <= 0) continue;
-
-    let name = raw
-      .replace(moneyRe, ' ')
-      .replace(qtyRe, ' ')
-      .replace(/^\s*0*\d{1,4}\s*[-.)#:\/]?\s*/i, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .replace(/^[\s\-:.)]+|[\s\-:.)]+$/g, '')
-      .trim();
-
-    const validName =
-      name.length >= 3 &&
-      name.length <= 70 &&
-      /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(name) &&
-      !/^(UN|UND|UNID|UNIDADE|KG|KILO|X)$/i.test(name) &&
-      !/^[\d\s.,-]+$/.test(name);
-
-    items.push({
-      name: validName ? name : 'PRODUTO (EDITAR)',
-      quantity,
-      unitPrice: Number.isFinite(unit) && unit > 0 ? unit : total,
-      total
+    out.push({
+      desc:validName?cleanName:'PRODUTO (EDITAR)',
+      value:total,
+      qty,
+      unit:Number.isFinite(unit)&&unit>0?unit:total,
+      raw,
+      editable:true
     });
   }
 
-  const seen = new Set();
-  return items.filter(item => {
-    const key =
-      `${item.name.toUpperCase()}|${item.quantity}|${item.total.toFixed(2)}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
+  const seen=new Set();
+  return out.filter(x=>{
+    const key=`${x.desc.toUpperCase()}|${x.qty}|${x.value.toFixed(2)}`;
+    if(seen.has(key))return false; seen.add(key); return true;
+  }).slice(0,100);
 }
 let receiptCropState={img:null,scale:1,displayW:0,displayH:0,x:0,y:0,w:0,h:0,startX:0,startY:0,dragging:false,blob:null};
 
@@ -510,11 +529,71 @@ function compareTotals(){let a=cart.reduce((s,x)=>s+x.price*x.qty,0),b=+charged.
 function savePurchase(){if(!cart.length){alert('Não há itens.');return}let total=cart.reduce((s,x)=>s+x.price*x.qty,0);histories.unshift({date:new Date().toLocaleString('pt-BR'),total,items:cart.length,receiptItems:receipt.length});histories=histories.slice(0,50);localStorage.setItem('cc_histories',JSON.stringify(histories));alert('Compra salva no histórico.');show('history')}
 function renderHist(){hist.innerHTML=histories.length?histories.map(h=>`<div class=item><b>${h.date}</b><div class=meta>${h.items} itens · previsto ${money(h.total)} · ${h.receiptItems} linhas de cupom lidas</div></div>`).join(''):'<div class=muted>Nenhuma compra salva.</div>'}
 function newPurchase(){if(confirm('Apagar a compra atual deste aparelho?')){cart=[];receipt=[];localStorage.removeItem('cc_cart');localStorage.removeItem('cc_receipt');render();show('cart')}}
+function saveShoppingList(){localStorage.setItem('cc_shopping_list',JSON.stringify(shoppingList));}
+function renderShoppingList(){
+  const box=document.getElementById('shoppingList'); if(!box)return;
+  if(!shoppingList.length){box.innerHTML='<div class="muted">Sua lista está vazia.</div>';return;}
+  box.innerHTML=shoppingList.map((x,i)=>`
+    <div class="item" style="${x.checked?'opacity:.65':''}">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <input type="checkbox" style="width:22px;height:22px;margin-top:2px" ${x.checked?'checked':''} onchange="toggleListItem(${i},this.checked)">
+        <div style="flex:1">
+          <div class="name" style="${x.checked?'text-decoration:line-through':''}">${esc(x.name)}</div>
+          <div class="meta">Quantidade: ${x.qty}${x.note?' · '+esc(x.note):''}</div>
+        </div>
+      </div>
+      <div class="grid" style="margin-top:8px">
+        <button class="sec" onclick="editListItem(${i})">✏️ Editar</button>
+        <button class="red" onclick="deleteListItem(${i})">🗑️ Excluir</button>
+      </div>
+    </div>`).join('');
+}
+function addListItem(){
+  const name=document.getElementById('listName').value.trim();
+  const qty=Math.max(1,Number(document.getElementById('listQty').value)||1);
+  const note=document.getElementById('listNote').value.trim();
+  if(!name){alert('Informe o produto.');return;}
+  shoppingList.push({id:Date.now(),name,qty,note,checked:false});
+  saveShoppingList(); renderShoppingList();
+  document.getElementById('listName').value='';
+  document.getElementById('listQty').value='1';
+  document.getElementById('listNote').value='';
+}
+function toggleListItem(i,checked){
+  if(!shoppingList[i])return;
+  shoppingList[i].checked=!!checked; saveShoppingList(); renderShoppingList();
+}
+function editListItem(i){
+  const x=shoppingList[i]; if(!x)return;
+  const name=prompt('Nome do produto:',x.name); if(name===null)return;
+  const qty=prompt('Quantidade:',x.qty); if(qty===null)return;
+  const note=prompt('Observação (opcional):',x.note||''); if(note===null)return;
+  if(!name.trim()){alert('O nome não pode ficar vazio.');return;}
+  shoppingList[i].name=name.trim();
+  shoppingList[i].qty=Math.max(1,Number(qty)||1);
+  shoppingList[i].note=note.trim();
+  saveShoppingList(); renderShoppingList();
+}
+function deleteListItem(i){
+  if(!shoppingList[i])return;
+  if(confirm('Excluir este item da lista?')){
+    shoppingList.splice(i,1);saveShoppingList();renderShoppingList();
+  }
+}
+function clearCheckedList(){
+  const n=shoppingList.filter(x=>x.checked).length;
+  if(!n){alert('Não há itens marcados.');return;}
+  if(confirm(`Remover ${n} item(ns) marcado(s)?`)){
+    shoppingList=shoppingList.filter(x=>!x.checked);saveShoppingList();renderShoppingList();
+  }
+}
+
 render();
+renderShoppingList();
 </script>
 <script>
 // Service Worker em arquivo separado e mesma origem: necessário para PWA/offline confiável no Vercel.
-const APP_VERSION='20260922-cc4';
+const APP_VERSION='20260923-cc5';
 if ('caches' in window) {
   caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('compra-certa-') && !k.includes(APP_VERSION)).map(k=>caches.delete(k)))).catch(()=>{});
 }
