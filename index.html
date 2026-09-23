@@ -307,62 +307,115 @@ function looksLikeReceiptName(s){
   if(digits>letters*4 && letters<4)return false;
   return true;
 }
-function parseReceipt(text){
-  const lines=filterReceiptOCR(text), out=[];
-  for(let raw of lines){
-    const line=raw.replace(/\s+/g,' ').trim();
-    if(receiptBlacklist(line)) continue;
+function parseReceipt(text) {
+  const START_MARKERS = [
+    /\bITEM\b/i, /\bC[ÓO]DIGO\b/i, /\bDESCRI[CÇ][AÃ]O\b/i,
+    /\bQTD\b/i, /^\s*0*1\s*[-.)]?\s+/i, /^\s*001\b/i
+  ];
 
-    // Só consideramos linhas que terminam com um preço monetário válido.
-    // Aceita 14,90, 9.90 e também R$ 14,90.
-    const endMatch=line.match(/(?:R\$\s*)?(\d{1,6}(?:[.,]\d{2}))\s*$/i);
-    if(!endMatch) continue;
+  const END_MARKERS = [
+    /\bVALOR\s+TOTAL\b/i, /\bQTD\.?\s*TOTAL\s+DE\s+ITENS\b/i,
+    /\bFORMA\s+DE\s+PAGAMENTO\b/i, /\bCART[ÃA]O\b/i,
+    /\bTROCO\b/i, /\bSUBTOTAL\b/i, /\bCHAVE\s+DE\s+ACESSO\b/i,
+    /^\s*TOTAL\b/i
+  ];
 
-    const total=moneyFromBR(endMatch[1]);
-    if(!Number.isFinite(total) || total<=0 || total>=100000) continue;
+  const FISCAL_BAD = [
+    /\bCNPJ\b/i, /\bCPF\b/i, /\bRAZ[AÃ]O\s+SOCIAL\b/i,
+    /\bENDERE[CÇ]O\b/i, /\bTELEFONE\b/i, /\bTEL\.?\b/i,
+    /\bNFC[\s-]?E\b/i, /\bSAT\b/i, /\bI\.?E\.?\b/i, /\bIM\b/i,
+    /\bINSCRI[CÇ][AÃ]O\b/i, /\bPROTOCOLO\b/i,
+    /\bCHAVE\s+DE\s+ACESSO\b/i, /https?:\/\//i, /\bwww\./i
+  ];
 
-    let before=line.slice(0,endMatch.index).trim();
-    let qty=1, unit=total;
+  const normalize = (line) => String(line || '')
+    .normalize('NFC')
+    .replace(/[=~|\\@_§<>]/g, ' ')
+    .replace(/[“”„‟«»]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 
-    // Padrões: DESCRIÇÃO 1 UN X 14,90 / DESCRIÇÃO 1 X 14,90.
-    const qx=before.match(/(?:^|\s)(\d+(?:[.,]\d+)?)\s*(?:X|UN|UND|UNID|UNIDADE)\s*(?:R\$\s*)?(\d{1,6}(?:[.,]\d{2}))\s*$/i);
-    if(qx){
-      qty=parseFloat(qx[1].replace(',','.'))||1;
-      unit=moneyFromBR(qx[2]);
-      before=before.slice(0,qx.index).trim();
-    }else{
-      const q2=before.match(/(?:^|\s)(\d+(?:[.,]\d+)?)\s*(?:X|UN|UND|UNID|UNIDADE)\s*$/i);
-      if(q2){
-        qty=parseFloat(q2[1].replace(',','.'))||1;
-        before=before.slice(0,q2.index).trim();
-      }
-    }
+  const lines = String(text || '')
+    .split(/\r?\n/)
+    .map(normalize)
+    .filter(Boolean);
 
-    // Remove numeração do item: 001, 002, 15 etc.
-    let desc=before.replace(/^\s*(?:ITEM\s*)?\d{1,6}\s*[-.)#:\/]*\s*/i,'').trim();
-    desc=desc.replace(/^[\s\-:.)]+|[\s\-:.)]+$/g,'').replace(/\s+/g,' ').trim();
+  const isEnd = (line) => END_MARKERS.some(re => re.test(line));
+  const isFiscal = (line) => FISCAL_BAD.some(re => re.test(line));
 
-    // Se houver apenas rótulo/unidade ou texto claramente ilegível,
-    // o item continua na lista para correção manual.
-    if(!looksLikeReceiptName(desc)) desc='Item do Cupom';
+  let start = lines.findIndex(line =>
+    START_MARKERS.some(re => re.test(line))
+  );
 
-    out.push({
-      desc,
-      value:total,
-      qty:qty>0?qty:1,
-      unit:Number.isFinite(unit)?unit:total,
-      raw:line,
-      editable:true
+  if (start < 0) {
+    start = lines.findIndex(line =>
+      /^\s*0*\d{1,4}\s+\S+/i.test(line)
+    );
+  }
+
+  if (start < 0) return [];
+
+  const useful = [];
+  for (let i = start + 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (isEnd(line)) break;
+    useful.push(line);
+  }
+
+  const moneyRe = /(?:R\$\s*)?(\d{1,7}(?:[.,]\d{2}))/g;
+  const qtyRe = /\b(\d+(?:[.,]\d+)?)\s*(UN|UND|UNID|UNIDADE|KG|KILO|X)\b/i;
+
+  const items = [];
+
+  for (const raw of useful) {
+    if (isFiscal(raw)) continue;
+
+    const money = [...raw.matchAll(moneyRe)];
+    const qty = raw.match(qtyRe);
+
+    if (!money.length || !qty) continue;
+
+    const quantity = Number(qty[1].replace(',', '.'));
+    const total = Number(money[money.length - 1][1].replace(',', '.'));
+    const unit = money.length > 1
+      ? Number(money[money.length - 2][1].replace(',', '.'))
+      : total;
+
+    if (!Number.isFinite(quantity) || quantity <= 0) continue;
+    if (!Number.isFinite(total) || total <= 0) continue;
+
+    let name = raw
+      .replace(moneyRe, ' ')
+      .replace(qtyRe, ' ')
+      .replace(/^\s*0*\d{1,4}\s*[-.)#:\/]?\s*/i, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .replace(/^[\s\-:.)]+|[\s\-:.)]+$/g, '')
+      .trim();
+
+    const validName =
+      name.length >= 3 &&
+      name.length <= 70 &&
+      /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(name) &&
+      !/^(UN|UND|UNID|UNIDADE|KG|KILO|X)$/i.test(name) &&
+      !/^[\d\s.,-]+$/.test(name);
+
+    items.push({
+      name: validName ? name : 'PRODUTO (EDITAR)',
+      quantity,
+      unitPrice: Number.isFinite(unit) && unit > 0 ? unit : total,
+      total
     });
   }
 
-  // Evita duplicações idênticas produzidas pelo OCR.
-  const seen=new Set(), unique=[];
-  for(const item of out){
-    const key=`${item.desc.toUpperCase()}|${item.qty}|${item.value.toFixed(2)}`;
-    if(!seen.has(key)){seen.add(key);unique.push(item);}
-  }
-  return unique.slice(0,100);
+  const seen = new Set();
+  return items.filter(item => {
+    const key =
+      `${item.name.toUpperCase()}|${item.quantity}|${item.total.toFixed(2)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 let receiptCropState={img:null,scale:1,displayW:0,displayH:0,x:0,y:0,w:0,h:0,startX:0,startY:0,dragging:false,blob:null};
 
